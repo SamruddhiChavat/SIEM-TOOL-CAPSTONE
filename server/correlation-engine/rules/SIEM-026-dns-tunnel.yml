@@ -1,0 +1,15 @@
+rule_id: SIEM-026
+name: DNS Tunneling Detection
+description: Triggers when unusually long, anomalous DNS queries occur.
+mitre_tactic: Command and Control
+mitre_technique: T1071.004
+severity: high
+logic:
+  field: mitre.technique_id
+  condition: equals
+  value: T1071.004
+  group_by: source_ip
+  threshold: 3
+  window: 60
+response_action: alert_only
+false_positive_notes: "Anti-spam DNS blocklist queries or large TXT records."

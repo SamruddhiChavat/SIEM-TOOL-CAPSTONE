@@ -1,0 +1,23 @@
+rule_id: SIEM-034
+name: Web Server Files Modified
+description: Identifies modifications in common web server directories indicating possible web shell or defacement.
+mitre_tactic: Persistence
+mitre_technique: T1505.003
+severity: high
+logic:
+  field: "module"
+  condition: "equals"
+  value: "fim"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "file_modified"
+    - field: "file_path"
+      condition: "contains"
+      value: "/var/www" 
+response_action: alert_only
+false_positive_notes: Legitimate deployments during a change window. Correlate with CI/CD events.
+compliance_mappings:
+  pci_dss: ["11.5"]
+  nist: ["SI-7"]
+  cis: ["3.14"]

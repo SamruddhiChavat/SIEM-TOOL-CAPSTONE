@@ -1,0 +1,52 @@
+packetbeat.interfaces.device: any
+packetbeat.interfaces.snaplen: 1514
+packetbeat.interfaces.buffer_size_mb: 100
+
+packetbeat.flows:
+  timeout: 30s
+  period: 10s
+
+packetbeat.protocols:
+  # HTTP traffic monitoring
+  - type: http
+    ports: [80, 8080, 8443, 8000, 3000]
+    send_headers: true
+    send_all_headers: true
+
+  # DNS monitoring for tunneling detection
+  - type: dns
+    ports: [53]
+    include_authorities: true
+    include_additionals: true
+
+  # TLS/HTTPS decryption metadata
+  - type: tls
+    ports: [443, 8443]
+
+  # SSH connection monitoring
+  - type: ssh
+    ports: [22]
+
+  # RDP monitoring
+  - type: rdp
+    ports: [3389]
+
+  # MySQL / Postgres query logging (internal traffic)
+  - type: mysql
+    ports: [3306]
+  - type: pgsql
+    ports: [5432]
+
+processors:
+  - add_host_metadata: ~
+  - # Drop packets not from/to the home network to reduce noise
+    drop_event:
+      when:
+        not:
+          or:
+            - network.community_id: "192.168.1.*"
+
+output.logstash:
+  hosts: ["192.168.1.4:5044"]
+
+logging.level: info

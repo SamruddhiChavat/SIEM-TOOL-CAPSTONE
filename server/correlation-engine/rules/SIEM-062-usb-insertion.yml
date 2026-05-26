@@ -1,0 +1,22 @@
+rule_id: "SIEM-062"
+name: "USB Device Insertion Detected"
+severity: "medium"
+description: "USB mass storage device connected to endpoint."
+mitre:
+  tactic: "Initial Access"
+  technique_id: "T1091"
+  technique_name: "Replication Through Removable Media"
+logic:
+  type: composite
+  operator: OR
+  conditions:
+    - field: "event_id"
+      condition: "equals"
+      value: "2003"
+    - field: "message"
+      condition: "contains"
+      value: "USB Mass Storage"
+    - field: "message"
+      condition: "regex"
+      value: "(?i)removable.*storage|usb.*disk"
+suppression: 300

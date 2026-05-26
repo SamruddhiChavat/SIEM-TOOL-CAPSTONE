@@ -1,0 +1,22 @@
+rule_id: "SIEM-063"
+name: "Security Log Cleared"
+severity: "critical"
+description: "Windows Security log or Linux audit log was cleared, potentially covering tracks."
+mitre:
+  tactic: "Defense Evasion"
+  technique_id: "T1070.001"
+  technique_name: "Clear Windows Event Logs"
+logic:
+  type: composite
+  operator: OR
+  conditions:
+    - field: "event_id"
+      condition: "equals"
+      value: "1102"
+    - field: "message"
+      condition: "contains"
+      value: "Log cleared"
+    - field: "command_line"
+      condition: "regex"
+      value: "(?i)wevtutil\\s+(cl|clear-log)|truncate.*auth\\.log|rm.*syslog"
+suppression: 60

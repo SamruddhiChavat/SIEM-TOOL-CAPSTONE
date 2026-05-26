@@ -1,0 +1,19 @@
+rule_id: "SIEM-059"
+name: "DCSync Attack Detected"
+severity: "critical"
+description: "Replication of Active Directory credentials using DCSync technique."
+mitre:
+  tactic: "Credential Access"
+  technique_id: "T1003.006"
+  technique_name: "DCSync"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "event_id"
+      condition: "equals"
+      value: "4662"
+    - field: "message"
+      condition: "contains"
+      value: "Replicating Directory Changes"
+suppression: 600

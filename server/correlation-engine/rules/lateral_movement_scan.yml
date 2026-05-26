@@ -1,0 +1,11 @@
+rule_id: "BEHAV-003"
+name: "Lateral Movement Scan"
+description: "Detects internal port scanning indicative of lateral movement, deviating from a baseline of zero."
+severity: "High"
+mitre_tactic: "Discovery"
+mitre_technique: "T1046"
+response_action: "investigate"
+logic:
+  field: "dimension"
+  condition: "equals"
+  value: "LATERAL_MOVEMENT_ANOMALY"

@@ -1,0 +1,15 @@
+rule_id: "SIEM-061"
+name: "Login at Abnormal Time"
+severity: "medium"
+description: "User login detected outside normal working hours."
+mitre:
+  tactic: "Initial Access"
+  technique_id: "T1078"
+  technique_name: "Valid Accounts"
+logic:
+  type: "baseline_deviation"
+  field: "event_id"
+  match_condition: "equals"
+  match_value: "4624"
+  check: "login_time"
+suppression: 3600

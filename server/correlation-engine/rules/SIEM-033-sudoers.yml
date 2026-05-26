@@ -1,0 +1,23 @@
+rule_id: SIEM-033
+name: Sudoers Configuration Modified
+description: Changes to /etc/sudoers grant privileges to alternative users, often used by attackers to escalate privileges securely.
+mitre_tactic: Privilege Escalation
+mitre_technique: T1548.003
+severity: high
+logic:
+  field: "module"
+  condition: "equals"
+  value: "fim"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "file_modified"
+    - field: "file_path"
+      condition: "contains"
+      value: "sudoers" 
+response_action: alert_only
+false_positive_notes: System administrators modifying access rights using visudo.
+compliance_mappings:
+  pci_dss: ["7.1.2"]
+  nist: ["AC-6"]
+  cis: ["5.4"]

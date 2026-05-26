@@ -1,0 +1,13 @@
+rule_id: "SIEM-060"
+name: "LOLBin Execution Detected"
+severity: "high"
+description: "Living-off-the-land binary used for suspicious activity."
+mitre:
+  tactic: "Defense Evasion"
+  technique_id: "T1218"
+  technique_name: "System Binary Proxy Execution"
+logic:
+  type: regex
+  field: "process"
+  pattern: "(?i)(certutil|bitsadmin|mshta|wmic|regsvr32|rundll32|msiexec|cmstp|msconfig|control)\\.exe"
+suppression: 120

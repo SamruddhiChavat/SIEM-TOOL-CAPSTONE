@@ -1,0 +1,23 @@
+rule_id: SIEM-032
+name: SSH Authorized Keys File Modified
+description: Modifications to an authorized_keys file can indicate an attacker installing persistent access.
+mitre_tactic: Persistence
+mitre_technique: T1098.004
+severity: high
+logic:
+  field: "module"
+  condition: "equals"
+  value: "fim"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "file_modified"
+    - field: "file_path"
+      condition: "contains"
+      value: "authorized_keys" 
+response_action: alert_only
+false_positive_notes: Authorized users legitimately updating their SSH keys.
+compliance_mappings:
+  pci_dss: ["8.1.1"]
+  nist: ["AC-2"]
+  cis: ["4.3"]

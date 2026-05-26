@@ -1,0 +1,19 @@
+rule_id: "SIEM-068"
+name: "CIS Compliance Check Failed"
+severity: "medium"
+description: "Security configuration assessment check did not pass."
+mitre:
+  tactic: "Defense Evasion"
+  technique_id: "T1562"
+  technique_name: "Impair Defenses"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "module"
+      condition: "equals"
+      value: "compliance"
+    - field: "compliance.result"
+      condition: "equals"
+      value: "fail"
+suppression: 3600

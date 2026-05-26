@@ -1,0 +1,11 @@
+rule_id: "BEHAV-004"
+name: "Auth Failure Storm"
+description: "Detects a credential stuffing or brute force attack exceeding normal failure baseline."
+severity: "Critical"
+mitre_tactic: "Credential Access"
+mitre_technique: "T1110.004"
+response_action: "isolate"
+logic:
+  field: "dimension"
+  condition: "equals"
+  value: "AUTH_FAILURE_ANOMALY"

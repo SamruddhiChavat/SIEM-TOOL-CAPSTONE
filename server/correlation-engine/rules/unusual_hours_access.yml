@@ -1,0 +1,11 @@
+rule_id: "BEHAV-001"
+name: "Unusual Hours Access"
+description: "Detects a user authenticating outside of their normal working hours baseline."
+severity: "High"
+mitre_tactic: "Initial Access"
+mitre_technique: "T1078"
+response_action: "investigate"
+logic:
+  field: "dimension"
+  condition: "equals"
+  value: "WORKING_HOURS_ANOMALY"

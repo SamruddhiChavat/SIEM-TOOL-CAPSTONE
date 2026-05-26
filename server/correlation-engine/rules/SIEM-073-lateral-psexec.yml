@@ -1,0 +1,22 @@
+rule_id: "SIEM-073"
+name: "Lateral Movement via PsExec/WMI/SMB"
+severity: "high"
+description: "Lateral movement activity detected using remote execution tools."
+mitre:
+  tactic: "Lateral Movement"
+  technique_id: "T1570"
+  technique_name: "Lateral Tool Transfer"
+logic:
+  type: composite
+  operator: OR
+  conditions:
+    - field: "process"
+      condition: "regex"
+      value: "(?i)psexe(c|svc)|wmic|wmiprvse"
+    - field: "event_id"
+      condition: "equals"
+      value: "7045"
+    - field: "message"
+      condition: "contains"
+      value: "PSEXESVC"
+suppression: 300

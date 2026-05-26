@@ -1,0 +1,13 @@
+rule_id: "SIEM-066"
+name: "Reverse Shell Heuristic"
+severity: "critical"
+description: "Process spawned with network redirection typical of reverse shells."
+mitre:
+  tactic: "Execution"
+  technique_id: "T1059"
+  technique_name: "Command and Scripting Interpreter"
+logic:
+  type: regex
+  field: "command_line"
+  pattern: "(?i)(bash\\s+-i|/dev/tcp/|nc\\s+-e|ncat.*-e|python.*socket.*connect|perl.*socket|ruby.*TCPSocket|php.*fsockopen)"
+suppression: 60

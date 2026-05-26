@@ -1,0 +1,12 @@
+rule_id: SIEM-018
+name: Sudo Abuse Detection
+description: Detects non-standard users utilizing sudo for privilege escalation.
+mitre_tactic: Privilege Escalation
+mitre_technique: T1548.003
+severity: medium
+logic:
+  field: mitre.technique_id
+  condition: equals
+  value: T1548.003
+response_action: alert_only
+false_positive_notes: "Authorized sysadmins doing normal work."

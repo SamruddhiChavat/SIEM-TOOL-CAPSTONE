@@ -1,0 +1,22 @@
+rule_id: "SIEM-050"
+name: "Pass-the-Hash Attack Detected"
+severity: "critical"
+description: "Detects NTLM authentication using a hash instead of a password, typical in lateral movement."
+mitre:
+  tactic: "Credential Access"
+  technique_id: "T1550.002"
+  technique_name: "Pass the Hash"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "event_id"
+      condition: "equals"
+      value: "4624"
+    - field: "_data_fields.LogonType"
+      condition: "equals"
+      value: "9"
+    - field: "_data_fields.AuthenticationPackageName"
+      condition: "equals"
+      value: "NTLM"
+suppression: 300

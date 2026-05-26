@@ -1,0 +1,13 @@
+rule_id: "SIEM-070"
+name: "Rootkit Indicators Detected"
+severity: "critical"
+description: "Rootkit detection module found suspicious indicators on endpoint."
+mitre:
+  tactic: "Defense Evasion"
+  technique_id: "T1014"
+  technique_name: "Rootkit"
+logic:
+  type: equals
+  field: "module"
+  value: "rootkit"
+suppression: 300

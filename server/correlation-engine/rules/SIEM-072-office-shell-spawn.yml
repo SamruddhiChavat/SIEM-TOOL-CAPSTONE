@@ -1,0 +1,19 @@
+rule_id: "SIEM-072"
+name: "Office Application Spawning Shell"
+severity: "critical"
+description: "Microsoft Office application spawned a command shell or scripting engine."
+mitre:
+  tactic: "Execution"
+  technique_id: "T1204.002"
+  technique_name: "Malicious File"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "process.parent"
+      condition: "regex"
+      value: "(?i)(winword|excel|powerpnt|outlook|msaccess)\\.exe"
+    - field: "process"
+      condition: "regex"
+      value: "(?i)(cmd|powershell|wscript|cscript|mshta|bash)\\.exe"
+suppression: 60

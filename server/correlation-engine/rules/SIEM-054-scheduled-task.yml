@@ -1,0 +1,13 @@
+rule_id: "SIEM-054"
+name: "Suspicious Scheduled Task Creation"
+severity: "high"
+description: "Creation of a scheduled task, often used for persistence."
+mitre:
+  tactic: "Persistence"
+  technique_id: "T1053.005"
+  technique_name: "Scheduled Task"
+logic:
+  type: equals
+  field: "event_id"
+  value: "4698"
+suppression: 300

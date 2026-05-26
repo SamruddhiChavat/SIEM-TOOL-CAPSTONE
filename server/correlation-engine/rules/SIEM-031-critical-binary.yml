@@ -1,0 +1,23 @@
+rule_id: SIEM-031
+name: Critical System Binary Modified
+description: A system binary in /bin or /sbin was modified cleanly. This strongly indicates a rootkit or backdoor installation.
+mitre_tactic: Defense Evasion
+mitre_technique: T1565.001
+severity: critical
+logic:
+  field: "module"
+  condition: "equals"
+  value: "fim"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "file_modified"
+    - field: "file_path"
+      condition: "contains" # Very simple matching for now
+      value: "/bin/" 
+response_action: alert_only
+false_positive_notes: System updates (apt/yum) will trigger this. Check if it correlates with a recent package manager execution.
+compliance_mappings:
+  pci_dss: ["11.5"]
+  nist: ["SI-7"]
+  cis: ["3.14"]

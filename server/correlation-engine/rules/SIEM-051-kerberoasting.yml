@@ -1,0 +1,17 @@
+rule_id: "SIEM-051"
+name: "Kerberoasting Activity Detected"
+severity: "high"
+description: "Excessive TGS requests for service tickets, indicating Kerberoasting attack."
+mitre:
+  tactic: "Credential Access"
+  technique_id: "T1558.003"
+  technique_name: "Kerberoasting"
+logic:
+  type: threshold
+  field: "event_id"
+  match_condition: "equals"
+  match_value: "4769"
+  group_by: "source_ip"
+  threshold: 15
+  window: 60
+suppression: 600

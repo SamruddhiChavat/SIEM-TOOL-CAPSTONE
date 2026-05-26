@@ -1,0 +1,36 @@
+winlogbeat.event_logs:
+  # Windows Security Events (most important for SIEM)
+  - name: Security
+    event_id: 4624, 4625, 4634, 4647, 4648, 4657, 4688, 4698, 4699, 4700, 4701, 4702, 4719, 4720, 4722, 4724, 4728, 4732, 4756, 4768, 4769, 4776
+    ignore_older: 1h
+
+  # System events - service installs, driver loads, errors
+  - name: System
+    event_id: 7034, 7035, 7036, 7040, 7045
+    ignore_older: 1h
+
+  # Application events
+  - name: Application
+    ignore_older: 1h
+
+  # Windows Defender events
+  - name: 'Microsoft-Windows-Windows Defender/Operational'
+    ignore_older: 1h
+
+  # PowerShell logging (requires PSModuleLogging and ScriptBlockLogging enabled)
+  - name: 'Microsoft-Windows-PowerShell/Operational'
+    event_id: 4100, 4103, 4104
+    ignore_older: 1h
+
+  # Windows Firewall events
+  - name: 'Microsoft-Windows-Windows Firewall With Advanced Security/Firewall'
+    ignore_older: 1h
+
+processors:
+  - add_host_metadata: ~
+
+# Ship Windows events to SIEM Logstash at 192.168.1.4
+output.logstash:
+  hosts: ["192.168.1.4:5044"]
+
+logging.level: info

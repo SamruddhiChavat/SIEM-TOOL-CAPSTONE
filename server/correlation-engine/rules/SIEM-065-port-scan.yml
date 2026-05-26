@@ -1,0 +1,16 @@
+rule_id: "SIEM-065"
+name: "Port Scan Detected"
+severity: "high"
+description: "Single source connecting to many destination ports in a short window."
+mitre:
+  tactic: "Reconnaissance"
+  technique_id: "T1046"
+  technique_name: "Network Service Scanning"
+logic:
+  type: threshold
+  field: "dest_port"
+  match_condition: "exists"
+  group_by: "source_ip"
+  threshold: 50
+  window: 60
+suppression: 600

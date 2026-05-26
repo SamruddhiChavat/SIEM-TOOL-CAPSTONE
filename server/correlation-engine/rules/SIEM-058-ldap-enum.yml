@@ -1,0 +1,17 @@
+rule_id: "SIEM-058"
+name: "LDAP Enumeration Detected"
+severity: "medium"
+description: "Excessive LDAP queries indicating Active Directory enumeration."
+mitre:
+  tactic: "Discovery"
+  technique_id: "T1087.002"
+  technique_name: "Domain Account"
+logic:
+  type: threshold
+  field: "event_id"
+  match_condition: "equals"
+  match_value: "4662"
+  group_by: "source_ip"
+  threshold: 50
+  window: 120
+suppression: 600

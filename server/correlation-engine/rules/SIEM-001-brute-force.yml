@@ -1,0 +1,15 @@
+rule_id: SIEM-001
+name: Brute Force Login
+description: Detects 5 or more failed login attempts from the same IP within 2 minutes.
+mitre_tactic: Initial Access
+mitre_technique: T1110
+severity: critical
+logic:
+  field: mitre.technique_id
+  condition: threshold
+  value: T1110
+  group_by: source_ip
+  threshold: 5
+  window: 120
+response_action: block_ip
+false_positive_notes: "Admin mistyping password during maintenance. Check context."

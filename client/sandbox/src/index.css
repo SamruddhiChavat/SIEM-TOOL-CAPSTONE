@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   SECURE WATCH ATTACK SANDBOX — Cyber SOC Design System
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  --bg-primary:   #0a0a0f;
+  --bg-panel:     #0f0f1a;
+  --bg-card:      #13131f;
+  --border:       #1e1e3a;
+  --neon-green:   #00ff88;
+  --neon-blue:    #00aaff;
+  --neon-red:     #ff3366;
+  --neon-orange:  #ff6600;
+  --neon-purple:  #aa55ff;
+  --neon-white:   #f0f8ff;
+  --dim-text:     #8888aa;
+
+  --glow-green:  0 0 8px #00ff88, 0 0 24px rgba(0,255,136,0.3);
+  --glow-blue:   0 0 8px #00aaff, 0 0 24px rgba(0,170,255,0.3);
+  --glow-red:    0 0 8px #ff3366, 0 0 24px rgba(255,51,102,0.35);
+  --glow-orange: 0 0 8px #ff6600, 0 0 20px rgba(255,102,0,0.3);
+  --glow-purple: 0 0 8px #aa55ff, 0 0 20px rgba(170,85,255,0.25);
+}
+
+@theme {
+  --font-sans: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+
+  @keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .35; }
+  }
+  @keyframes shimmer {
+    to { left: 100%; }
+  }
+  @keyframes breach-pulse {
+    0%, 100% { box-shadow: 0 0 0   0   rgba(255,51,102,0); }
+    50%       { box-shadow: 0 0 40px 12px rgba(255,51,102,0.25); }
+  }
+  @keyframes siem-detect {
+    0%   { box-shadow: 0 0 0  0  rgba(0,170,255,0); }
+    50%  { box-shadow: 0 0 40px 15px rgba(0,170,255,0.5); }
+    100% { box-shadow: 0 0 0  0  rgba(0,170,255,0); }
+  }
+  @keyframes log-in {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+}
+
+/* ── Global reset ─────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body, #root { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--neon-white);
+    font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-panel); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+}
+
+/* ── Grid background texture ─────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0,170,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,170,255,0.04) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* ── Scanline overlay ────────────────────────────────── */
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,0,0,0.07) 3px,
+    rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Display / title font ────────────────────────────── */
+.font-display  { font-family: 'Orbitron',  'Rajdhani', sans-serif; }
+.font-rajdhani { font-family: 'Rajdhani', sans-serif; }
+
+/* ── Neon text glows ─────────────────────────────────── */
+.glow-green  { text-shadow: var(--glow-green);  color: var(--neon-green); }
+.glow-blue   { text-shadow: var(--glow-blue);   color: var(--neon-blue); }
+.glow-red    { text-shadow: var(--glow-red);    color: var(--neon-red); }
+.glow-orange { text-shadow: var(--glow-orange); color: var(--neon-orange); }
+
+/* ── Panel / card wrappers ───────────────────────────── */
+.cyber-panel  { background: var(--bg-panel); border: 1px solid var(--border); position: relative; overflow: hidden; }
+.cyber-card   { background: var(--bg-card);  border: 1px solid var(--border); border-radius: 6px; transition: border-color 0.2s, box-shadow 0.2s; }
+.cyber-card:hover { border-color: rgba(0,170,255,0.3); box-shadow: 0 0 16px rgba(0,170,255,0.08); }
+.cyber-card.active { border-color: var(--neon-green); box-shadow: var(--glow-green); }
+.cyber-card.danger { border-color: var(--neon-red);   animation: breach-pulse 2s ease-in-out infinite; }
+
+/* ── Neon border glow ────────────────────────────────── */
+.panel-glow-green { box-shadow: 0 0 20px rgba(0,255,136,0.12), inset 0 0 20px rgba(0,255,136,0.03); }
+.panel-glow-blue  { box-shadow: 0 0 20px rgba(0,170,255,0.12), inset 0 0 20px rgba(0,170,255,0.03); }
+.panel-glow-red   { box-shadow: 0 0 20px rgba(255,51,102,0.15), inset 0 0 20px rgba(255,51,102,0.04); }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn-launch {
+  background: linear-gradient(135deg, rgba(255,51,102,0.15), rgba(255,51,102,0.08));
+  border: 1px solid var(--neon-red);
+  color: var(--neon-red);
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 7px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.btn-launch:hover:not(:disabled) { background: rgba(255,51,102,0.25); box-shadow: var(--glow-red); transform: translateY(-1px); }
+.btn-launch:disabled              { opacity: 0.4; cursor: not-allowed; }
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--dim-text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-secondary:hover { border-color: var(--neon-blue); color: var(--neon-blue); }
+
+/* ── Severity badges ─────────────────────────────────── */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 2px 7px; border-radius: 3px; text-transform: uppercase; }
+.badge-critical { background: rgba(255,51,102,0.15); color: var(--neon-red);    border: 1px solid rgba(255,51,102,0.4); }
+.badge-high     { background: rgba(255,102,0,0.15);  color: var(--neon-orange); border: 1px solid rgba(255,102,0,0.4); }
+.badge-medium   { background: rgba(255,200,0,0.12);  color: #ffcc00;            border: 1px solid rgba(255,200,0,0.35); }
+.badge-info     { background: rgba(0,170,255,0.12);  color: var(--neon-blue);   border: 1px solid rgba(0,170,255,0.35); }
+
+/* ── Form inputs ─────────────────────────────────────── */
+.cyber-input, .cyber-select {
+  background: rgba(10,10,20,0.8);
+  border: 1px solid var(--border);
+  color: var(--neon-white);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cyber-input:focus, .cyber-select:focus { border-color: var(--neon-blue); box-shadow: 0 0 0 2px rgba(0,170,255,0.12); }
+.cyber-select option { background: var(--bg-card); }
+
+/* ── Range slider ────────────────────────────────────── */
+input[type="range"] { -webkit-appearance: none; appearance: none; background: var(--border); height: 3px; border-radius: 2px; outline: none; width: 100%; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--neon-blue); box-shadow: var(--glow-blue); cursor: pointer; }
+
+/* ── Progress bar ────────────────────────────────────── */
+.progress-bar { height: 3px; background: linear-gradient(90deg, var(--neon-green), var(--neon-blue)); border-radius: 2px; position: relative; overflow: hidden; }
+.progress-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 1.5s infinite; }
+
+/* ── Status dots ─────────────────────────────────────── */
+.dot-live   { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-green); box-shadow: var(--glow-green); animation: pulse-slow 2s ease-in-out infinite; display: inline-block; }
+.dot-attack { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-red);   box-shadow: var(--glow-red);   animation: pulse-slow 1.2s ease-in-out infinite; display: inline-block; }
+
+/* ── Log entry animation ─────────────────────────────── */
+.log-entry { animation: log-in 0.2s ease-out; }
+
+/* ── Attack card ─────────────────────────────────────── */
+.attack-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; }
+.attack-card:hover    { border-color: rgba(0,170,255,0.35); box-shadow: 0 0 20px rgba(0,170,255,0.1); transform: translateY(-1px); }
+.attack-card.selected { border-color: var(--neon-blue); box-shadow: var(--glow-blue); }
+
+/* ── Graph canvas ────────────────────────────────────── */
+.topology-canvas {
+  background: radial-gradient(ellipse at center, rgba(0,30,60,0.5) 0%, var(--bg-panel) 70%);
+  position: relative;
+  overflow: hidden;
+}

@@ -1,0 +1,19 @@
+rule_id: "SIEM-069"
+name: "Critical Vulnerability Found on Agent"
+severity: "high"
+description: "Vulnerability scanner found a critical CVE on an endpoint."
+mitre:
+  tactic: "Initial Access"
+  technique_id: "T1190"
+  technique_name: "Exploit Public-Facing Application"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "module"
+      condition: "equals"
+      value: "vulnerability"
+    - field: "vulnerability.cvss_score"
+      condition: "greater_than"
+      value: 7.0
+suppression: 3600

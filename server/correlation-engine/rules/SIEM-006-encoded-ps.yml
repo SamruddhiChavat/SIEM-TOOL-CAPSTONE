@@ -1,0 +1,12 @@
+rule_id: SIEM-006
+name: PowerShell Encoded Command
+description: Detects the use of base64 encoded PowerShell commands.
+mitre_tactic: Execution
+mitre_technique: T1059.001
+severity: high
+logic:
+  field: process.command_line
+  condition: contains
+  value: "-enc"
+response_action: alert_only
+false_positive_notes: "IT management scripts or RMM tools dropping encoded payloads."

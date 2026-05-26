@@ -1,0 +1,23 @@
+rule_id: SIEM-035
+name: Windows System32 DLL Replaced
+description: An attacker replaced a core system DLL, an indicator of potential DLL hijacking or system-level rootkit deployment.
+mitre_tactic: Defense Evasion
+mitre_technique: T1574.001
+severity: critical
+logic:
+  field: "module"
+  condition: "equals"
+  value: "fim"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "file_modified"
+    - field: "file_path"
+      condition: "contains"
+      value: "System32" 
+response_action: alert_only
+false_positive_notes: Windows Update legitimately replacing DLLs.
+compliance_mappings:
+  pci_dss: ["11.5"]
+  nist: ["SI-7"]
+  cis: ["3.14"]

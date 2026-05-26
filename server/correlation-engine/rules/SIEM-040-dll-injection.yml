@@ -1,0 +1,20 @@
+rule_id: SIEM-040
+name: Process Injection or Memory Anomaly
+description: A process exhibited memory patterns indicative of DLL/SO injection (e.g., reflective loading).
+mitre_tactic: Defense Evasion
+mitre_technique: T1055
+severity: critical
+logic:
+  field: "module"
+  condition: "equals"
+  value: "rootkit_detector"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "process_injection_detected"
+response_action: alert_only
+false_positive_notes: Anti-virus and EDR tools inject into processes constantly.
+compliance_mappings:
+  pci_dss: ["11.4"]
+  nist: ["SI-4"]
+  cis: ["8.2"]

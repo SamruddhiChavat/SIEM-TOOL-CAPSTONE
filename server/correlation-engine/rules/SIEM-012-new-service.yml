@@ -1,0 +1,12 @@
+rule_id: SIEM-012
+name: New Service Installed
+description: Detects when a new Windows service is created (Event ID 7045), typical of persistence in APTs.
+mitre_tactic: Persistence
+mitre_technique: T1543.003
+severity: high
+logic:
+  field: mitre.technique_id
+  condition: equals
+  value: T1543.003
+response_action: alert_only
+false_positive_notes: "Software installation or patching."

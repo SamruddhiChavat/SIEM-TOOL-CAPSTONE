@@ -1,0 +1,20 @@
+rule_id: SIEM-039
+name: LD_PRELOAD Modification Detected
+description: The /etc/ld.so.preload file is populated. This is frequently abused by malware to load malicious libraries ahead of system libraries.
+mitre_tactic: Defense Evasion
+mitre_technique: T1574.006
+severity: high
+logic:
+  field: "module"
+  condition: "equals"
+  value: "rootkit_detector"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "ld_preload_detected"
+response_action: alert_only
+false_positive_notes: Some monitoring or sandboxing applications legitamately use ld_preload.
+compliance_mappings:
+  pci_dss: ["11.4"]
+  nist: ["SI-4"]
+  cis: ["8.2"]

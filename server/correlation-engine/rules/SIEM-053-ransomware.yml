@@ -1,0 +1,17 @@
+rule_id: "SIEM-053"
+name: "Ransomware File Extension Changes"
+severity: "critical"
+description: "Mass file renames to known ransomware extensions detected."
+mitre:
+  tactic: "Impact"
+  technique_id: "T1486"
+  technique_name: "Data Encrypted for Impact"
+logic:
+  type: threshold
+  field: "file.path"
+  match_condition: "regex"
+  match_value: "\\.(encrypted|locked|crypted|crypt|locky|wcry|wncry|zzzzz|zepto|cerber|ROGER|GANDCRAB)$"
+  group_by: "agent.id"
+  threshold: 10
+  window: 60
+suppression: 300

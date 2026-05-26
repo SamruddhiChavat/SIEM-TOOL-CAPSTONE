@@ -1,0 +1,13 @@
+rule_id: "SIEM-064"
+name: "Connection to Tor Exit Node"
+severity: "high"
+description: "Outbound connection to known Tor exit node detected."
+mitre:
+  tactic: "Command and Control"
+  technique_id: "T1090.003"
+  technique_name: "Multi-hop Proxy"
+logic:
+  type: contains
+  field: "tags"
+  value: "tor_exit_node"
+suppression: 600

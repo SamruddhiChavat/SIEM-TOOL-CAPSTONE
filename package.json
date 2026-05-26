@@ -1,0 +1,16 @@
+{
+  "name": "securewatch-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client/dashboard",
+    "client/sandbox",
+    "server/relay"
+  ],
+  "scripts": {
+    "start": "./start.sh",
+    "stop": "./stop.sh",
+    "install:all": "npm install"
+  },
+  "dependencies": {}
+}

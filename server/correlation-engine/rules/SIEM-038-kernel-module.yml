@@ -1,0 +1,20 @@
+rule_id: SIEM-038
+name: Malicious Kernel Module Detected
+description: A known malicious kernel module (LKM rootkit) such as Diamorphine or Reptile was detected.
+mitre_tactic: Persistence
+mitre_technique: T1547.006
+severity: critical
+logic:
+  field: "module"
+  condition: "equals"
+  value: "rootkit_detector"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "kernel_module_detected"
+response_action: isolate_host
+false_positive_notes: Near zero false positive rate if signatures are strict.
+compliance_mappings:
+  pci_dss: ["11.4"]
+  nist: ["SI-4"]
+  cis: ["8.2"]

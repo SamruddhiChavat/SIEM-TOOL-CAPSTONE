@@ -1,0 +1,350 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-resources: &default-resources
+  deploy:
+    resources:
+      limits:
+        cpus: "0.5"
+        memory: "512M"
+      reservations:
+        cpus: "0.1"
+        memory: "256M"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: securewatch-elasticsearch
+    restart: unless-stopped
+    environment:
+      - node.name=securewatch-node-1
+      - cluster.name=securewatch-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+        reservations:
+          cpus: "0.5"
+          memory: "1G"
+    volumes:
+      - securewatch-es-data:/usr/share/elasticsearch/data
+    ports:
+      - "127.0.0.1:9200:9200" # Expose only to localhost
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.13.4
+    container_name: securewatch-logstash
+    restart: unless-stopped
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "LS_JAVA_OPTS=-Xms1g -Xmx1g"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1.5G"
+        reservations:
+          cpus: "0.5"
+          memory: "1G"
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "0.0.0.0:5044:5044"       # Beats input
+      - "0.0.0.0:5140:5140/udp"   # Syslog UDP
+      - "0.0.0.0:5140:5140/tcp"   # Syslog TCP
+      - "0.0.0.0:5055:5055"       # Linux Auth logs via Filebeat
+      - "0.0.0.0:5060:5060"       # API Audit Logs via custom json forwarder
+      - "0.0.0.0:5514:5514/udp"   # Windows Event Log forwarding
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9600/_node/os >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    container_name: securewatch-kibana
+    restart: unless-stopped
+    environment:
+      - SERVER_NAME=securewatch-kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    <<: *default-resources
+    ports:
+      - "127.0.0.1:5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q '\"level\":\"available\"' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    container_name: securewatch-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redispass123!}
+    <<: *default-resources
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - securewatch-redis-data:/data
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: securewatch-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-siemuser}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-siempass123!}
+      - POSTGRES_DB=${POSTGRES_DB:-siemdb}
+    <<: *default-resources
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - securewatch-pg-data:/var/lib/postgresql/data
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-siemuser} -d ${POSTGRES_DB:-siemdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./server/api
+      dockerfile: Dockerfile
+    container_name: securewatch-backend
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redispass123!}@redis:6379/0
+      - POSTGRES_URL=postgresql://${POSTGRES_USER:-siemuser}:${POSTGRES_PASSWORD:-siempass123!}@postgres:5432/${POSTGRES_DB:-siemdb}
+      - JWT_SECRET=${JWT_SECRET:-super_secret}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8080,http://127.0.0.1:8080,http://192.168.1.3:3000,http://192.168.1.3:5174,http://192.168.1.6:3000,http://192.168.1.6:5174}
+      - VIRUSTOTAL_API_KEY=${VIRUSTOTAL_API_KEY}
+      - ABUSEIPDB_API_KEY=${ABUSEIPDB_API_KEY}
+    <<: *default-resources
+    ports:
+      - "0.0.0.0:8000:8000"
+    volumes:
+      - ./server/api:/app
+      - ./server/correlation-engine/rules:/app/rules:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+
+
+  correlation_engine:
+    build:
+      context: ./server/correlation-engine
+      dockerfile: Dockerfile
+    container_name: securewatch-correlation-engine
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redispass123!}@redis:6379/0
+      - FASTAPI_URL=http://backend:8000
+      - VIRUSTOTAL_API_KEY=${VIRUSTOTAL_API_KEY}
+      - ABUSEIPDB_API_KEY=${ABUSEIPDB_API_KEY}
+    <<: *default-resources
+    volumes:
+      - ./server/correlation-engine:/app
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  manager:
+    build:
+      context: ./server/manager
+      dockerfile: Dockerfile
+    container_name: securewatch-manager
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redispass123!}@redis:6379/0
+      - POSTGRES_URL=postgresql://${POSTGRES_USER:-siemuser}:${POSTGRES_PASSWORD:-siempass123!}@postgres:5432/${POSTGRES_DB:-siemdb}
+    <<: *default-resources
+    ports:
+      - "0.0.0.0:1514:1514"
+    volumes:
+      - ./server/manager:/app
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+
+  active_response:
+    build:
+      context: ./server/active-response
+      dockerfile: Dockerfile
+    container_name: securewatch-active-response
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redispass123!}@redis:6379/0
+      - FASTAPI_URL=http://backend:8000
+    <<: *default-resources
+    volumes:
+      - ./server/active-response:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+
+  # ── SOC Dashboard (React → Nginx, proxies /api and /sandbox) ──────────────
+  frontend:
+    build:
+      context: ./client/dashboard
+      dockerfile: Dockerfile
+    container_name: securewatch-frontend
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+      relay:
+        condition: service_started
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:80 > /dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ── Relay — attack-log SSE bridge (sandbox → dashboard) ───────────────────
+  relay:
+    build:
+      context: ./server/relay
+      dockerfile: Dockerfile
+    container_name: securewatch-relay
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:4000:4000"
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ── Sandbox — Attacking Box UI (React → Nginx, proxies /api to relay) ─────
+  sandbox:
+    build:
+      context: ./client/sandbox
+      dockerfile: Dockerfile
+    container_name: securewatch-sandbox
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:5174:80"
+    depends_on:
+      relay:
+        condition: service_healthy
+    networks:
+      - securewatch-net
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:80 > /dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+networks:
+  securewatch-net:
+    driver: bridge
+
+volumes:
+  securewatch-es-data:
+  securewatch-pg-data:
+  securewatch-redis-data:

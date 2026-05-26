@@ -1,0 +1,12 @@
+rule_id: SIEM-025
+name: Large Outbound Data Transfer
+description: Detects massive data exfiltration over the network.
+mitre_tactic: Exfiltration
+mitre_technique: T1041
+severity: critical
+logic:
+  field: mitre.technique_id
+  condition: equals
+  value: T1041
+response_action: isolate_host
+false_positive_notes: "Legitimate massive data backups or cloud syncings."

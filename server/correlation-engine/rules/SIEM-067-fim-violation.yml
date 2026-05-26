@@ -1,0 +1,22 @@
+rule_id: "SIEM-067"
+name: "Critical File Integrity Violation"
+severity: "critical"
+description: "Modification of critical system file detected by FIM."
+mitre:
+  tactic: "Defense Evasion"
+  technique_id: "T1565.001"
+  technique_name: "Stored Data Manipulation"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "module"
+      condition: "equals"
+      value: "fim"
+    - field: "file.path"
+      condition: "regex"
+      value: "/etc/(passwd|shadow|sudoers|ssh/sshd_config)|/bin/|/sbin/|System32"
+    - field: "file.action"
+      condition: "regex"
+      value: "modify|delete|create"
+suppression: 120

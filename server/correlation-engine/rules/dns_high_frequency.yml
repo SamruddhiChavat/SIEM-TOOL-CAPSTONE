@@ -1,0 +1,11 @@
+rule_id: "BEHAV-005"
+name: "DNS High-Frequency Queries"
+description: "Detects DNS tunneling or beaconing via high-frequency subdomain queries exceeding baseline."
+severity: "Critical"
+mitre_tactic: "Command & Control"
+mitre_technique: "T1071.004"
+response_action: "investigate"
+logic:
+  field: "dimension"
+  condition: "equals"
+  value: "DNS_QUERY_ANOMALY"

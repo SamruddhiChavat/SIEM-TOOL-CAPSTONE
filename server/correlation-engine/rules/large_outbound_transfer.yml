@@ -1,0 +1,11 @@
+rule_id: "BEHAV-002"
+name: "Large Outbound Transfer"
+description: "Detects an endpoint sending data exceeding its 99th percentile baseline."
+severity: "Critical"
+mitre_tactic: "Exfiltration"
+mitre_technique: "T1041"
+response_action: "isolate"
+logic:
+  field: "dimension"
+  condition: "equals"
+  value: "DATA_TRANSFER_ANOMALY"

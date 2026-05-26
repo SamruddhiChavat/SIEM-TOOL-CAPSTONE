@@ -1,0 +1,40 @@
+filebeat.inputs:
+  # Real auth logs from this Linux/Mac host
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/auth.log         # Ubuntu/Debian SSH logins
+      - /var/log/secure           # RHEL/CentOS SSH logins
+      - /var/log/syslog           # General system logs
+      - /var/log/kern.log         # Kernel logs
+    tags: ["linux_auth", "siem_detected_event"]
+    fields:
+      siem_source: linux
+
+  # macOS specific logs (deployed on Mac endpoints)
+  - type: log
+    enabled: true
+    paths:
+      - /private/var/log/system.log
+      - /private/var/log/install.log
+    tags: ["macos_system", "siem_detected_event"]
+    fields:
+      siem_source: macos
+
+# Enable Filebeat built-in modules for structured parsing
+filebeat.modules:
+  - module: system
+    syslog:
+      enabled: true
+    auth:
+      enabled: true
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+
+# Ship directly to Logstash on your SIEM host (192.168.1.4)
+output.logstash:
+  hosts: ["192.168.1.4:5055"]
+
+logging.level: info

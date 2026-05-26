@@ -1,0 +1,20 @@
+rule_id: SIEM-036
+name: Hidden Rootkit Process Detected (ps vs /proc mismatch)
+description: A process is hiding in user-space from the `ps` command but is visible to the kernel in `/proc`. High probability of a user-land rootkit.
+mitre_tactic: Defense Evasion
+mitre_technique: T1564
+severity: critical
+logic:
+  field: "module"
+  condition: "equals"
+  value: "rootkit_detector"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "rootkit_process_detected"
+response_action: isolate_host
+false_positive_notes: Extremely rare. Process racing conditions could technically cause a mismatch, but is unlikely.
+compliance_mappings:
+  pci_dss: ["11.4"]
+  nist: ["SI-4"]
+  cis: ["8.2"]

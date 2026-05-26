@@ -1,0 +1,19 @@
+rule_id: "SIEM-056"
+name: "Web Shell Upload Detected"
+severity: "critical"
+description: "Suspicious file creation in web server directories."
+mitre:
+  tactic: "Persistence"
+  technique_id: "T1505.003"
+  technique_name: "Web Shell"
+logic:
+  type: composite
+  operator: AND
+  conditions:
+    - field: "file.path"
+      condition: "regex"
+      value: "/var/www|/usr/share/nginx|htdocs|wwwroot|inetpub"
+    - field: "file.path"
+      condition: "regex"
+      value: "\\.(php|asp|aspx|jsp|jspx|cgi|py|pl|sh)$"
+suppression: 300

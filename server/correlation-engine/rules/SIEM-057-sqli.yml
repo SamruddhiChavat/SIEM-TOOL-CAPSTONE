@@ -1,0 +1,13 @@
+rule_id: "SIEM-057"
+name: "SQL Injection Pattern in Web Logs"
+severity: "high"
+description: "SQL injection attempt detected in HTTP request parameters."
+mitre:
+  tactic: "Initial Access"
+  technique_id: "T1190"
+  technique_name: "Exploit Public-Facing Application"
+logic:
+  type: regex
+  field: "message"
+  pattern: "(?i)(union\\s+select|or\\s+1\\s*=\\s*1|'\\s*or\\s*'|;\\s*drop\\s+table|xp_cmdshell|/\\*.*\\*/|benchmark\\(|sleep\\()"
+suppression: 60

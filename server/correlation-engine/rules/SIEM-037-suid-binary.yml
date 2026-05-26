@@ -1,0 +1,20 @@
+rule_id: SIEM-037
+name: Suspicious SUID Binary Detected
+description: A binary with the SUID bit set was detected in a temporary directory (/tmp, /var/tmp). This is a common privilege escalation vector.
+mitre_tactic: Privilege Escalation
+mitre_technique: T1548.001
+severity: high
+logic:
+  field: "module"
+  condition: "equals"
+  value: "rootkit_detector"
+  and:
+    - field: "event_type"
+      condition: "equals"
+      value: "suid_binary_detected"
+response_action: alert_only
+false_positive_notes: Some installers drop temporary SUID binaries, but it is bad practice.
+compliance_mappings:
+  pci_dss: ["7.1.2"]
+  nist: ["AC-6"]
+  cis: ["5.4"]
