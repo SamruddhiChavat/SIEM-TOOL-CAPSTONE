@@ -1,4 +1,3 @@
-<img width="1280" height="831" alt="image" src="https://github.com/user-attachments/assets/5882353d-ab36-4172-af85-f2ff4c7b0239" />
 
 <p align="center">
   <img src="https://img.shields.io/badge/SecureWatch-v1.0.0-00D1FF?style=for-the-badge&logo=shield&logoColor=white" alt="Version"/>
