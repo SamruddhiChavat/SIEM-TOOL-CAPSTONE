@@ -1,3 +1,5 @@
+<img width="1280" height="831" alt="image" src="https://github.com/user-attachments/assets/5882353d-ab36-4172-af85-f2ff4c7b0239" />
+
 <p align="center">
   <img src="https://img.shields.io/badge/SecureWatch-v1.0.0-00D1FF?style=for-the-badge&logo=shield&logoColor=white" alt="Version"/>
   <img src="https://img.shields.io/badge/License-GPLv2-green?style=for-the-badge" alt="License"/>
@@ -12,6 +14,12 @@
 <p align="center">Unified threat detection, correlation, and active response for local network environments.</p>
 
 ---
+<img width="1280" height="736" alt="image" src="https://github.com/user-attachments/assets/6c9eede5-db85-4a85-89f2-976148f79195" />
+<img width="1280" height="831" alt="image" src="https://github.com/user-attachments/assets/9455ce60-00a8-4e8b-8ef3-6e0412d67420" />
+<img width="1280" height="831" alt="image" src="https://github.com/user-attachments/assets/ef2421df-7280-4cbc-a8d7-f8225c6a0ff8" />
+<img width="1280" height="831" alt="image" src="https://github.com/user-attachments/assets/7e164fd0-8524-4b2d-9921-3004aba801bd" />
+<img width="1280" height="831" alt="image" src="https://github.com/user-attachments/assets/2fe54817-6585-4084-838c-70db550d0f6f" />
+
 
 SecureWatch is a free and open-source SIEM platform purpose-built for SOC (Security Operations Center) teams and cybersecurity students. It provides **real-time threat detection**, **MITRE ATT&CK-mapped correlation rules**, **automated incident response**, and a **premium dark-themed SOC dashboard** — all deployed as a single Docker Compose stack.
 
