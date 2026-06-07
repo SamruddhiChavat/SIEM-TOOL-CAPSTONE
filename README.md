@@ -247,44 +247,6 @@ securewatch/
 
 ---
 
-## 📖 Documentation
-
-- [Deployment Guide](DEPLOY.md) — Step-by-step setup instructions
-- [API Documentation](http://localhost:8000/docs) — Interactive Swagger UI (after deployment)
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 🔒 Security Policy
-
-See [SECURITY.md](SECURITY.md) for our security policy and responsible disclosure process.
-
----
-
-## 📄 License
-
-SecureWatch is distributed under the **GNU General Public License v2.0**. See [LICENSE](LICENSE) for details.
-
----
-
-## 👤 Author
-
-**Jesal Shah** — [GitHub](https://github.com/JesalShah27)
-
-Built as a production-grade cybersecurity project demonstrating enterprise SIEM architecture, MITRE ATT&CK integration, and real-time SOC operations.
-
----
 
 <p align="center">
   <sub>⭐ Star this repository if you find it useful!</sub>
